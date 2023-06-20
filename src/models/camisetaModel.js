@@ -1,77 +1,64 @@
 const clienteDB = require('../database/cliente');
-
-const supabase = clienteDB.getClienteDB();
-
+const supabase = clienteDB.supabase;
 
 const getTodasLasCamisetas = async () => {
-  const { data, error } = await supabase
-    .from('camiseta')
-    .select('id_camiseta, descripcion, precio, talles, imagen, id_equipo, estado, equipo(nombre)')
-    .eq('estado','Habilitado');
-  if (error) {
-    console.error(error);
+  try {
+    const result = await supabase.query("SELECT id_camiseta, descripcion, precio, talles, imagen, id_equipo FROM camiseta WHERE estado = 'Habilitado'");
+    return result.rows;
+  }
+  catch (error) {
+    console.log(error);
     return null;
   }
-  return data;
 };
 
 const getCamisetaPorId = async (id) => {
-  const { data, error } = await supabase
-    .from('camiseta')
-    .select('id_camiseta, descripcion, precio, talles, imagen')
-    .eq('id_camiseta', id)
-    .eq('estado','Habilitado')
-    .single();
-  if (error) {
-    console.error(error);
+  try {
+    const result = await supabase.query("SELECT id_camiseta, descripcion, precio, talles, imagen, id_equipo FROM camiseta WHERE estado = 'Habilitado' AND id_camiseta = "+id);
+    return result.rows;
+  }
+  catch (error) {
+    console.log(error);
     return null;
   }
-  return data;
 };
 
-//no puedo hacer que muestre el id y nombre de la liga y el nombre del equipo esta adentro de "equipo"
 const getCamisetasDeEquipoPorId = async (id) => {
-  const { data, error } = await supabase
-    .from('camiseta')
-    .select('id_camiseta, descripcion, precio, talles, imagen, id_equipo, estado, equipo(nombre)')
-    .eq('id_equipo', id)
-    .eq('estado','Habilitado');
-  if (error) {
-    console.error(error);
+  try {
+    const result = await supabase.query("SELECT id_camiseta, descripcion, precio, talles, imagen, equipo.id_equipo, equipo.nombre as equipo, liga.nombre as liga, liga.id_liga FROM camiseta JOIN equipo ON camiseta.id_equipo = equipo.id_equipo JOIN liga ON liga.id_liga = equipo.id_liga WHERE estado = 'Habilitado' AND equipo.id_equipo = "+id);
+    return result.rows;
+  }
+  catch (error) {
+    console.log(error);
     return null;
   }
-  return data;
 };
 
-//se ve bastante raro el json, es como que cada indice del json son las camisetas de un equipo
 const getCamisetasDeLigaPorId = async (id) => {
-  const { data, error } = await supabase
-    .from('equipo')
-    .select('nombre, camiseta(id_camiseta, descripcion, precio, talles, imagen, id_equipo, estado), nombre, liga(id_liga, nombre)')
-    .eq('id_liga', id)
-    .eq('camiseta.estado','Habilitado');
-    
-  if (error) {
-    console.error(error);
+  try {
+    const result = await supabase.query("SELECT id_camiseta, descripcion, precio, talles, imagen, equipo.id_equipo, equipo.nombre as equipo, liga.nombre as liga, liga.id_liga FROM camiseta JOIN equipo ON camiseta.id_equipo = equipo.id_equipo JOIN liga ON liga.id_liga = equipo.id_liga WHERE estado = 'Habilitado' AND liga.id_liga = "+id);
+    return result.rows;
+  }
+  catch (error) {
+    console.log(error);
     return null;
   }
-  return data;
 };
 
 const exist = async (id) => {
-  const { data, error } = await supabase
-    .from('camiseta')
-    .select('id_camiseta')
-    .eq('id_camiseta', id)
-    .single();
-  let existe;
-  if (data == null) {
-      existe = false;
+  try {
+    const result = await supabase.query("SELECT id_camiseta FROM camiseta WHERE id_camiseta = "+id);
+    if (result.rows.length > 0) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
-  else {
-      existe = true;
+  catch (error) {
+    console.log(error);
+    return null;
   }
-  return existe;
 };
 
 module.exports = {

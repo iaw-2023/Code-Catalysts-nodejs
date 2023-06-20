@@ -1,7 +1,7 @@
 const Pedido = require('../models/pedidoModel');
 const DetallePedido = require('../models/detallePedidoModel');
-const Cliente = require('../models/clienteModel');
-const Camiseta = require('../models/camisetaModel');
+const ControladorCliente = require('../controllers/clienteController');
+const ControladorCamiseta = require('../controllers/camisetaController');
 
 const insertPedido = async (req, res) => {
     const body = req.body;
@@ -12,23 +12,23 @@ const insertPedido = async (req, res) => {
         const camisetas = body.camisetas;
         const validacion = await validacionDeBody(body);
         if (validacion.paso == true) {
-            const idCliente = await Cliente.getIDByEmail(body.email)
+            const idCliente = await ControladorCliente.getIDByEmail(body.email);
             await Pedido.insertPedido(idCliente);
             const ultID = await Pedido.ultimoIDInsertado();
             await DetallePedido.insertDetallePedido(ultID,camisetas);
             res.status(200).json({ message: validacion.mensaje});
         }
         else {
-            res.status(500).json({ message: validacion.mensaje });
+            res.status(400).json({ message: validacion.mensaje });
         }
     }
 };
 
 const getPedidosByEmail = async (req, res) => {
     const email = req.params.email;
-    const idCliente = await Cliente.getIDByEmail(email)
+    const idCliente = await ControladorCliente.getIDByEmail(email);
     if (idCliente != null) {
-        const pedidos = await Pedido.getPedidosByEmail(idCliente);
+        const pedidos = await Pedido.getPedidosByID(idCliente);
         res.status(200).json(pedidos);
     }
     else {
@@ -42,10 +42,10 @@ const validacionDeBody = async (body) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const emailValido = regex.test(body.email);
     if (emailValido == true) {
-        const idCliente = await Cliente.getIDByEmail(body.email)
+        const idCliente = await ControladorCliente.getIDByEmail(body.email);
         if (idCliente != null) {
             for (let camiseta of body.camisetas) {
-                if (await Camiseta.exist(camiseta.id_camiseta) == false) {
+                if (await ControladorCamiseta.exist(camiseta.id_camiseta) == false) {
                     validacion = {
                         paso: false,
                         mensaje: "La camiseta con id "+camiseta.id_camiseta+" no fue encontrada."

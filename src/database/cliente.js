@@ -1,12 +1,14 @@
-const { createClient } = require('@supabase/supabase-js');
-const {URL, KEY} = require('../constantes');
+const { Pool } = require('pg');
+const {USER, PASSWORD, HOST, PORT, DATABASE} = require('../constantes');
 
-const supabase = createClient(URL, KEY);
-
-const getClienteDB = () => {
-    return supabase;
-};
+const supabase = new Pool({
+  user: USER,
+  password: PASSWORD,
+  host: HOST,
+  port: PORT,
+  database: DATABASE,
+});
 
 module.exports = {
-    getClienteDB
+    supabase
 }

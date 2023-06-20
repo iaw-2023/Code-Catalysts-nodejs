@@ -1,49 +1,51 @@
 const clienteDB = require('../database/cliente');
+const supabase = clienteDB.supabase;
 
-const supabase = clienteDB.getClienteDB();
-
-const getIDByEmail = async (email) => {
-    const { data, error } = await supabase
-      .from('cliente')
-      .select('id_cliente')
-      .eq('email', email)
-      .single();
-    let id;
-    if (data == null) {
-        id = null;
+const exist = async (email) => {
+    const result = await supabase.query("SELECT * FROM cliente WHERE email = '"+email+"'");
+    if (result.rows.length > 0) {
+        return true;
     }
     else {
-        id = data.id_cliente;
+        return false;
     }
-    return id;
-};
+}
 
-const getClienteByEmail = async (email) => {
-    const { data, error } = await supabase
-      .from('cliente')
-      .select('id_cliente, password')
-      .eq('email', email)
-      .single();
-    return data;
-};
+const getPassword = async (email) => {
+    const result = await supabase.query("SELECT password FROM cliente WHERE email = '"+email+"'");
+    return result.rows[0].password;
+}
 
 const register = async (email,password) => {
     const tiempoTranscurrido = Date.now();
-    const hoy = new Date(tiempoTranscurrido);
-    const cliente = {
-        email: email,
-        password: password,
-        created_at: hoy,
-        updated_at: hoy
+    const hoy = new Date(tiempoTranscurrido).toISOString();;
+    try {
+        await supabase.query("INSERT INTO cliente (email, password, created_at, updated_at) VALUES ('"+email+"', '"+password+"', '"+hoy+"', '"+hoy+"')");
     }
-    const { error } = await supabase
-        .from('cliente')
-        .insert(cliente);
-    console.log(error);
+    catch (error) {
+        console.log(+error);
+    }
+};
+
+const getIDByEmail = async (email) => {
+    try {
+        const result = await supabase.query("SELECT id_cliente FROM cliente WHERE email = '"+email+"'");
+        if (result.rows.length == 0) {
+            return null;
+        }
+        else {
+            return result.rows[0].id_cliente;
+        }
+      }
+      catch (error) {
+        console.log(error);
+        return null;
+      }
 };
 
 module.exports = {
+    exist,
+    getPassword,
     getIDByEmail,
-    getClienteByEmail,
     register
 }

@@ -3,26 +3,27 @@ const bcrypt = require('bcryptjs');
 
 const login = async (req, res) => {
     const body = req.body;
-    if (!body.email || !body.password) {//si no tiene estos campos
-        res.status(400).send({ message: "El request login está incompleto, falta alguno de los siguientes campos: email y/o password."});
-    }
+    if (!body.email || !body.password) {
+      res.status(400).send({ message: "El request login está incompleto, falta alguno de los siguientes campos: email y/o password." });
+    } 
     else {
         const email = body.email;
-        const password = body.password;
-        const cliente = await Cliente.getClienteByEmail(email);
-        if (cliente != null) {
-            if (await bcrypt.compare(password,cliente.password) == true) {
+        const password = body.password.toString();
+        if (await Cliente.exist(email)) {    
+            const passwordObtenida = await Cliente.getPassword(email);
+            if (await bcrypt.compare(password, passwordObtenida)) {
                 res.status(200).json({ message: "Usuario válido." });
-            }
+            } 
             else {
                 res.status(400).json({ message: "Contraseña inválida." });
             }
         }
         else {
-            res.status(400).json({ message: "El email del cliente es inválido." });
+            res.status(400).json({ message: "Email inválido." });
         }
     }
 };
+
 
 const register = async (req, res) => {
     const body = req.body;
@@ -38,15 +39,14 @@ const register = async (req, res) => {
             regex = /^(?=.*\d).{8,}$/;
             const passwordValido = regex.test(password);
             if (passwordValido == true) {
-                const cliente = await Cliente.getClienteByEmail(email);
-                if (cliente == null) {
+                if (await Cliente.exist(email)) {
+                    res.status(400).send({ message: "El email ingresado ya está registrado."});
+                }   
+                else {
                     const saltRounds = 10;
                     const passwordHash = bcrypt.hashSync(password, saltRounds);
                     await Cliente.register(email, passwordHash);
                     res.status(200).json({ message: "Usuario registrado correctamente."});
-                }   
-                else {
-                    res.status(400).send({ message: "El email ingresado ya está registrado."});
                 }
             }
             else {
@@ -59,7 +59,13 @@ const register = async (req, res) => {
     }
 };
 
+const getIDByEmail = async (email) => {
+    return Cliente.getIDByEmail(email);
+}
+
+
 module.exports = {
     login,
-    register
+    register,
+    getIDByEmail
 };

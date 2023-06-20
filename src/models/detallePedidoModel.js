@@ -1,26 +1,17 @@
 const clienteDB = require('../database/cliente');
-
-const supabase = clienteDB.getClienteDB();
+const supabase = clienteDB.supabase;
 
 const insertDetallePedido = async (id,camisetas) => {
     const tiempoTranscurrido = Date.now();
-    const hoy = new Date(tiempoTranscurrido);
-    let nuevoDetallePedido;
-    let error;
+    const hoy = new Date(tiempoTranscurrido).toISOString();
     for (let camiseta of camisetas) {
-        nuevoDetallePedido = {
-          id_pedido: id,
-          id_camiseta: camiseta.id_camiseta,
-          talle: camiseta.talle,
-          created_at: hoy,
-          updated_at: hoy
-        };
-         error  = await supabase
-        .from('detalle_pedido')
-        .insert(nuevoDetallePedido);
-        console.log(error);
+        try {
+            await supabase.query("INSERT INTO detalle_pedido (id_pedido, id_camiseta, talle, created_at, updated_at) VALUES ('"+id+"', '"+camiseta.id_camiseta+"', '"+camiseta.talle+"', '"+hoy+"', '"+hoy+"')");
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
-    return error;
 }
 
 module.exports = {

@@ -1,29 +1,26 @@
 const clienteDB = require('../database/cliente');
-
-const supabase = clienteDB.getClienteDB();
+const supabase = clienteDB.supabase;
 
 const getTodasLasLigas = async () => {
-    const { data, error } = await supabase
-      .from('liga')
-      .select('id_liga, nombre');
-    if (error) {
-      console.error(error);
-      return null;
+    try {
+        const result = await supabase.query("SELECT id_liga, nombre FROM liga");
+        return result.rows;
     }
-    return data;
+    catch (error) {
+        console.log(error);
+        return null;
+    }
 };
 
 const getLigaPorId = async (id) => {
-  const { data, error } = await supabase
-    .from('liga')
-    .select('id_liga, nombre')
-    .eq('id_liga', id)
-    .single();
-  if (error) {
-    console.error(error);
-    return null;
-  }
-  return data;
+    try {
+        const result = await supabase.query("SELECT id_liga, nombre FROM liga WHERE id_liga = "+id);
+        return result.rows;
+    }
+    catch (error) {
+        console.log(error);
+        return null;
+    }
 };
 
 module.exports = {
