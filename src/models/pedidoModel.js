@@ -3,9 +3,13 @@ const supabase = clienteDB.supabase;
 
 const insertPedido = async (id) => {
     const tiempoTranscurrido = Date.now();
-    const hoy = new Date(tiempoTranscurrido).toISOString();
+    const hoy = new Date(tiempoTranscurrido);
+    const year = hoy.getFullYear();
+    const month = String(hoy.getMonth() + 1).padStart(2, '0');
+    const day = String(hoy.getDate()).padStart(2, '0');
+    const fechaFormateada = `${year}-${month}-${day}`;
     try {
-        await supabase.query("INSERT INTO pedido (id_cliente, fecha, created_at, updated_at) VALUES ('"+id+"', '"+hoy+"', '"+hoy+"', '"+hoy+"')");
+        await supabase.query("INSERT INTO pedido (id_cliente, fecha, created_at, updated_at) VALUES ('"+id+"', '"+fechaFormateada+"', '"+fechaFormateada+"', '"+fechaFormateada+"')");
     }
     catch (error) {
         console.log(error);
