@@ -12,7 +12,7 @@ const login = async (req, res) => {
         if (await Cliente.exist(email)) {    
             const passwordObtenida = await Cliente.getPassword(email);
             if (await bcrypt.compare(password, passwordObtenida)) {
-                res.status(200).json({ message: "Usuario válido." });
+                res.status(200).json({ message: "Ha iniciado sesión correctamente como "+email});
             } 
             else {
                 res.status(400).json({ message: "Contraseña inválida." });

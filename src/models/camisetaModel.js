@@ -3,7 +3,7 @@ const supabase = clienteDB.supabase;
 
 const getTodasLasCamisetas = async () => {
   try {
-    const result = await supabase.query("SELECT id_camiseta, descripcion, precio, talles, imagen, id_equipo FROM camiseta WHERE estado = 'Habilitado'");
+    const result = await supabase.query("SELECT id_camiseta, descripcion, precio, talles, imagen, equipo.id_equipo, equipo.nombre as equipo, liga.nombre as liga, liga.id_liga FROM camiseta JOIN equipo ON camiseta.id_equipo = equipo.id_equipo JOIN liga ON equipo.id_liga = liga.id_liga WHERE estado = 'Habilitado'");
     return result.rows;
   }
   catch (error) {

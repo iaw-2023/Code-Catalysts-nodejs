@@ -1,0 +1,346 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API Tienda \"La Camiseta No Se Mancha\"",
+    "description": "Esta API se encarga de compartir información sobre las camisetas, equipos y ligas que administra nuestra tienda. Además, recibe los nuevos pedidos realizados por los clientes para almacenarlos en nuestra base de datos.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Camisetas"
+    },
+    {
+      "name": "Equipos"
+    },
+    {
+      "name": "Ligas"
+    },
+    {
+      "name": "Pedidos"
+    },
+    {
+      "name": "Clientes"
+    }
+  ],
+  "paths": {
+    "/camisetas": {
+      "get": {
+        "tags": [
+          "Camisetas"
+        ],
+        "summary": "Devuelve todas las camisetas de la tienda que tengan estado \"Habilitado\".",
+        "responses": {
+          "200": {
+            "description": "(OK) Las camisetas fueron obtenidas correctamente."
+          }
+        }
+      }
+    },
+    "/camiseta/{id}": {
+      "get": {
+        "tags": [
+          "Camisetas"
+        ],
+        "summary": "Devuelve una camiseta que tenga estado \"Habilitado\".",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador de la camiseta a obtener.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) La camiseta fue obtenida correctamente."
+          }
+        }
+      }
+    },
+    "/camisetas/equipo/{id}": {
+      "get": {
+        "tags": [
+          "Camisetas"
+        ],
+        "summary": "Devuelve todas las camisetas de un equipo que tengan estado \"Habilitado\".",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador del equipo a obtener sus camisetas.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) Las camisetas del equipo fueron obtenidas correctamente."
+          }
+        }
+      }
+    },
+    "/camisetas/liga/{id}": {
+      "get": {
+        "tags": [
+          "Camisetas"
+        ],
+        "summary": "Devuelve todas las camisetas de una liga que tengan estado \"Habilitado\".",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador de la liga a obtener sus camisetas.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) Las camisetas de la liga fueron obtenidas correctamente."
+          }
+        }
+      }
+    },
+    "/equipos": {
+      "get": {
+        "tags": [
+          "Equipos"
+        ],
+        "summary": "Devuelve todos los equipos que administra la tienda.",
+        "responses": {
+          "200": {
+            "description": "(OK) Los equipos fueron obtenidos correctamente."
+          }
+        }
+      }
+    },
+    "/equipo/{id}": {
+      "get": {
+        "tags": [
+          "Equipos"
+        ],
+        "summary": "Devuelve un equipo.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador del equipo a obtener.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) El equipo fue obtenido correctamente."
+          }
+        }
+      }
+    },
+    "/equipos/liga/{id}": {
+      "get": {
+        "tags": [
+          "Equipos"
+        ],
+        "summary": "Devuelve todos los equipos de una liga.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador de la liga a obtener sus equipos.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) Los equipos fueron obtenidos correctamente."
+          }
+        }
+      }
+    },
+    "/ligas": {
+      "get": {
+        "tags": [
+          "Ligas"
+        ],
+        "summary": "Devuelve todos las ligas que administra la tienda.",
+        "responses": {
+          "200": {
+            "description": "(OK) Las ligas fueron obtenidas correctamente."
+          }
+        }
+      }
+    },
+    "/liga/{id}": {
+      "get": {
+        "tags": [
+          "Ligas"
+        ],
+        "summary": "Devuelve una liga.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador de la liga a obtener.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) La liga fue obtenida correctamente."
+          }
+        }
+      }
+    },
+    "/pedido": {
+      "post": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Inserta un nuevo pedido.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "Email del cliente que realiza el pedido."
+                  },
+                  "camisetas": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id_camiseta": {
+                          "type": "integer",
+                          "description": "Identificador de la camiseta del pedido."
+                        },
+                        "talle": {
+                          "type": "string",
+                          "description": "Talle de la camiseta del pedido."
+                        }
+                      }
+                    },
+                    "description": "Camisetas del pedido."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "(OK) El pedido fue insertado correctamente."
+          }
+        }
+      }
+    },
+    "/pedidos/{email}": {
+      "get": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Devuelve todos los pedidos de un cliente.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "description": "Email del cliente a obtener sus pedidos.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) Los pedidos fueron obtenidos correctamente."
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Verifica que las credenciales ingresadas por el cliente sean válidas.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "Email del cliente."
+                  },
+                  "password": {
+                    "description": "Contraseña del cliente."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "(OK) Las credenciales del cliente son válidas."
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Registra un cliente.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "Email del cliente."
+                  },
+                  "password": {
+                    "description": "Contraseña del cliente."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "(OK) El cliente fue registrado correctamente."
+          }
+        }
+      }
+    }
+  }
+}
